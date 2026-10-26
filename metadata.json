@@ -1,0 +1,6 @@
+{
+  "name": "Acharya R. & Associates - Audit Practice & People Management",
+  "description": "Integrated Audit Practice & People Management System for Chartered Accountancy firms, featuring client & assignment tracking, audit task workflows, article trainee daily logs, and attendance & leave management.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

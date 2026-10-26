@@ -1,0 +1,332 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "User profile with role-based access control, department, and CA practice metadata.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "maxLength": 128 },
+        "email": { "type": "string", "maxLength": 128 },
+        "displayName": { "type": "string", "maxLength": 128 },
+        "role": { "type": "string", "enum": ["managing_partner", "engagement_partner", "audit_manager", "audit_senior", "article_trainee", "hr_admin"] },
+        "employeeCode": { "type": "string", "maxLength": 32 },
+        "designation": { "type": "string", "maxLength": 64 },
+        "phone": { "type": "string", "maxLength": 32 },
+        "department": { "type": "string", "maxLength": 64 },
+        "joiningDate": { "type": "string", "maxLength": 32 },
+        "registrationNumber": { "type": "string", "maxLength": 64 },
+        "status": { "type": "string", "enum": ["active", "on_leave", "resigned", "completed_articleship"] },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["uid", "email", "displayName", "role", "employeeCode", "status"]
+    },
+    "Client": {
+      "title": "Client",
+      "description": "Client master for audit and assurance engagements in Nepal.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64 },
+        "clientCode": { "type": "string", "maxLength": 32 },
+        "name": { "type": "string", "maxLength": 128 },
+        "entityType": { "type": "string", "maxLength": 64 },
+        "industry": { "type": "string", "maxLength": 64 },
+        "panNumber": { "type": "string", "maxLength": 32 },
+        "registrationNumber": { "type": "string", "maxLength": 64 },
+        "registeredAddress": { "type": "string", "maxLength": 256 },
+        "contactPerson": { "type": "string", "maxLength": 128 },
+        "contactEmail": { "type": "string", "maxLength": 128 },
+        "contactPhone": { "type": "string", "maxLength": 32 },
+        "financialYear": { "type": "string", "maxLength": 32 },
+        "reportingFramework": { "type": "string", "maxLength": 64 },
+        "leadPartnerId": { "type": "string", "maxLength": 128 },
+        "leadPartnerName": { "type": "string", "maxLength": 128 },
+        "status": { "type": "string", "enum": ["active", "inactive", "prospect"] },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["clientCode", "name", "entityType", "industry", "panNumber", "status"]
+    },
+    "Assignment": {
+      "title": "Assignment",
+      "description": "Audit assignment / engagement register.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64 },
+        "referenceNo": { "type": "string", "maxLength": 64 },
+        "clientId": { "type": "string", "maxLength": 64 },
+        "clientName": { "type": "string", "maxLength": 128 },
+        "category": { "type": "string", "enum": ["statutory_audit", "internal_audit", "tax_audit", "agreed_upon_procedures", "due_diligence", "advisory", "special_audit"] },
+        "financialYear": { "type": "string", "maxLength": 32 },
+        "engagementPartnerId": { "type": "string", "maxLength": 128 },
+        "engagementPartnerName": { "type": "string", "maxLength": 128 },
+        "auditManagerId": { "type": "string", "maxLength": 128 },
+        "auditManagerName": { "type": "string", "maxLength": 128 },
+        "teamMemberIds": { "type": "array" },
+        "startDate": { "type": "string", "maxLength": 32 },
+        "targetCompletionDate": { "type": "string", "maxLength": 32 },
+        "statutoryDeadline": { "type": "string", "maxLength": 32 },
+        "budgetedHours": { "type": "number" },
+        "actualHours": { "type": "number" },
+        "priority": { "type": "string", "enum": ["low", "medium", "high", "critical"] },
+        "riskLevel": { "type": "string", "enum": ["low", "medium", "high", "significant"] },
+        "planningStatus": { "type": "string", "enum": ["not_started", "in_progress", "completed", "approved"] },
+        "fieldworkStatus": { "type": "string", "enum": ["not_started", "in_progress", "submitted", "approved"] },
+        "reviewStatus": { "type": "string", "enum": ["not_started", "pending_partner_review", "review_points_open", "cleared"] },
+        "completionStatus": { "type": "string", "enum": ["draft", "planning", "fieldwork", "manager_review", "partner_review", "completed", "archived"] },
+        "partnerSignoffDate": { "type": "string", "maxLength": 32 },
+        "partnerSignoffNotes": { "type": "string", "maxLength": 512 },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["referenceNo", "clientId", "clientName", "category", "engagementPartnerId", "completionStatus"]
+    },
+    "Task": {
+      "title": "Task",
+      "description": "Specific audit program task or workflow step.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64 },
+        "assignmentId": { "type": "string", "maxLength": 64 },
+        "assignmentRef": { "type": "string", "maxLength": 64 },
+        "clientName": { "type": "string", "maxLength": 128 },
+        "title": { "type": "string", "maxLength": 200 },
+        "description": { "type": "string", "maxLength": 1000 },
+        "auditArea": { "type": "string", "maxLength": 64 },
+        "milestone": { "type": "string", "maxLength": 64 },
+        "assignedToId": { "type": "string", "maxLength": 128 },
+        "assignedToName": { "type": "string", "maxLength": 128 },
+        "reviewerId": { "type": "string", "maxLength": 128 },
+        "reviewerName": { "type": "string", "maxLength": 128 },
+        "priority": { "type": "string", "enum": ["low", "medium", "high", "urgent"] },
+        "startDate": { "type": "string", "maxLength": 32 },
+        "dueDate": { "type": "string", "maxLength": 32 },
+        "estimatedHours": { "type": "number" },
+        "actualHours": { "type": "number" },
+        "status": { "type": "string", "enum": ["not_started", "in_progress", "submitted_for_review", "returned_for_revision", "approved", "completed"] },
+        "workingPaperRef": { "type": "string", "maxLength": 64 },
+        "reviewComments": { "type": "string", "maxLength": 1000 },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["assignmentId", "title", "auditArea", "assignedToId", "status"]
+    },
+    "WorkLog": {
+      "title": "WorkLog",
+      "description": "Daily article trainee work diary entry for ICAN compliance and assignment hour tracking.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64 },
+        "traineeId": { "type": "string", "maxLength": 128 },
+        "traineeName": { "type": "string", "maxLength": 128 },
+        "workDate": { "type": "string", "maxLength": 32 },
+        "assignmentId": { "type": "string", "maxLength": 64 },
+        "assignmentRef": { "type": "string", "maxLength": 64 },
+        "clientId": { "type": "string", "maxLength": 64 },
+        "clientName": { "type": "string", "maxLength": 128 },
+        "auditArea": { "type": "string", "maxLength": 64 },
+        "taskId": { "type": "string", "maxLength": 64 },
+        "taskTitle": { "type": "string", "maxLength": 200 },
+        "supervisorId": { "type": "string", "maxLength": 128 },
+        "supervisorName": { "type": "string", "maxLength": 128 },
+        "workDescription": { "type": "string", "maxLength": 2000 },
+        "auditProcedures": { "type": "string", "maxLength": 2000 },
+        "workingPaperRef": { "type": "string", "maxLength": 64 },
+        "hours": { "type": "number" },
+        "findings": { "type": "string", "maxLength": 2000 },
+        "pendingItems": { "type": "string", "maxLength": 1000 },
+        "status": { "type": "string", "enum": ["draft", "submitted", "under_review", "returned_for_revision", "approved"] },
+        "reviewerComments": { "type": "string", "maxLength": 1000 },
+        "approvedAt": { "type": "string", "maxLength": 32 },
+        "approvedBy": { "type": "string", "maxLength": 128 },
+        "version": { "type": "number" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["traineeId", "workDate", "assignmentId", "auditArea", "hours", "status"]
+    },
+    "AttendanceRecord": {
+      "title": "AttendanceRecord",
+      "description": "Employee attendance check-in/out and client site record.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64 },
+        "userId": { "type": "string", "maxLength": 128 },
+        "userName": { "type": "string", "maxLength": 128 },
+        "date": { "type": "string", "maxLength": 32 },
+        "checkInTime": { "type": "string", "maxLength": 32 },
+        "checkOutTime": { "type": "string", "maxLength": 32 },
+        "totalWorkingMinutes": { "type": "number" },
+        "locationType": { "type": "string", "enum": ["office", "client_site", "remote"] },
+        "clientId": { "type": "string", "maxLength": 64 },
+        "clientName": { "type": "string", "maxLength": 128 },
+        "status": { "type": "string", "enum": ["present", "late", "half_day", "absent", "corrected"] },
+        "notes": { "type": "string", "maxLength": 500 },
+        "hasCorrectionRequest": { "type": "boolean" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["userId", "date", "checkInTime", "locationType", "status"]
+    },
+    "AttendanceCorrection": {
+      "title": "AttendanceCorrection",
+      "description": "Correction request for missing check-in/out or inaccurate logs.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64 },
+        "attendanceRecordId": { "type": "string", "maxLength": 64 },
+        "userId": { "type": "string", "maxLength": 128 },
+        "userName": { "type": "string", "maxLength": 128 },
+        "date": { "type": "string", "maxLength": 32 },
+        "originalCheckIn": { "type": "string", "maxLength": 32 },
+        "originalCheckOut": { "type": "string", "maxLength": 32 },
+        "requestedCheckIn": { "type": "string", "maxLength": 32 },
+        "requestedCheckOut": { "type": "string", "maxLength": 32 },
+        "reason": { "type": "string", "maxLength": 500 },
+        "status": { "type": "string", "enum": ["pending", "approved", "rejected"] },
+        "approverId": { "type": "string", "maxLength": 128 },
+        "approverName": { "type": "string", "maxLength": 128 },
+        "approverNotes": { "type": "string", "maxLength": 500 },
+        "actionedAt": { "type": "string", "maxLength": 32 },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["userId", "date", "requestedCheckIn", "reason", "status"]
+    },
+    "LeaveRequest": {
+      "title": "LeaveRequest",
+      "description": "Leave application and approval flow.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64 },
+        "userId": { "type": "string", "maxLength": 128 },
+        "userName": { "type": "string", "maxLength": 128 },
+        "userRole": { "type": "string", "maxLength": 64 },
+        "category": { "type": "string", "enum": ["casual_leave", "sick_leave", "ca_exam_study", "annual_leave", "maternity_paternity", "unpaid_leave"] },
+        "startDate": { "type": "string", "maxLength": 32 },
+        "endDate": { "type": "string", "maxLength": 32 },
+        "daysCount": { "type": "number" },
+        "isHalfDay": { "type": "boolean" },
+        "halfDaySession": { "type": "string", "enum": ["morning", "afternoon", "full"] },
+        "reason": { "type": "string", "maxLength": 1000 },
+        "attachmentRef": { "type": "string", "maxLength": 256 },
+        "status": { "type": "string", "enum": ["submitted", "pending_manager", "pending_hr_partner", "approved", "rejected", "cancelled"] },
+        "approverId": { "type": "string", "maxLength": 128 },
+        "approverName": { "type": "string", "maxLength": 128 },
+        "approverRemarks": { "type": "string", "maxLength": 500 },
+        "actionedAt": { "type": "string", "maxLength": 32 },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["userId", "userName", "category", "startDate", "endDate", "daysCount", "status"]
+    },
+    "ReviewPoint": {
+      "title": "ReviewPoint",
+      "description": "Audit review comment / query raised by Senior, Manager, or Partner.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64 },
+        "referenceNo": { "type": "string", "maxLength": 64 },
+        "assignmentId": { "type": "string", "maxLength": 64 },
+        "assignmentRef": { "type": "string", "maxLength": 64 },
+        "clientName": { "type": "string", "maxLength": 128 },
+        "workingPaperRef": { "type": "string", "maxLength": 64 },
+        "issueDescription": { "type": "string", "maxLength": 1000 },
+        "raisedById": { "type": "string", "maxLength": 128 },
+        "raisedByName": { "type": "string", "maxLength": 128 },
+        "assignedToId": { "type": "string", "maxLength": 128 },
+        "assignedToName": { "type": "string", "maxLength": 128 },
+        "priority": { "type": "string", "enum": ["low", "medium", "high", "critical"] },
+        "dateRaised": { "type": "string", "maxLength": 32 },
+        "targetClearanceDate": { "type": "string", "maxLength": 32 },
+        "traineeResponse": { "type": "string", "maxLength": 1000 },
+        "evidenceRef": { "type": "string", "maxLength": 256 },
+        "status": { "type": "string", "enum": ["open", "addressed_pending_clearance", "cleared", "waived"] },
+        "clearedById": { "type": "string", "maxLength": 128 },
+        "clearedByName": { "type": "string", "maxLength": 128 },
+        "clearanceDate": { "type": "string", "maxLength": 32 },
+        "clearanceRemarks": { "type": "string", "maxLength": 500 },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["referenceNo", "assignmentId", "issueDescription", "raisedById", "assignedToId", "status"]
+    },
+    "AppNotification": {
+      "title": "AppNotification",
+      "description": "In-app notifications for task assignments, approvals, deadlines, and review comments.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64 },
+        "userId": { "type": "string", "maxLength": 128 },
+        "title": { "type": "string", "maxLength": 200 },
+        "message": { "type": "string", "maxLength": 500 },
+        "type": { "type": "string", "enum": ["task", "work_log", "leave", "attendance", "review_point", "assignment", "system"] },
+        "relatedId": { "type": "string", "maxLength": 64 },
+        "isRead": { "type": "boolean" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["userId", "title", "message", "type", "isRead"]
+    },
+    "AuditEvent": {
+      "title": "AuditEvent",
+      "description": "System activity and security audit trail.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64 },
+        "userId": { "type": "string", "maxLength": 128 },
+        "userName": { "type": "string", "maxLength": 128 },
+        "action": { "type": "string", "maxLength": 64 },
+        "entityType": { "type": "string", "maxLength": 64 },
+        "entityId": { "type": "string", "maxLength": 64 },
+        "details": { "type": "string", "maxLength": 1000 },
+        "timestamp": { "type": "string" }
+      },
+      "required": ["userId", "action", "entityType", "timestamp"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "UserProfile",
+      "description": "User profile with role and CA credentials."
+    },
+    "/clients/{clientId}": {
+      "schema": "Client",
+      "description": "Firm client accounts."
+    },
+    "/assignments/{assignmentId}": {
+      "schema": "Assignment",
+      "description": "Audit engagements and practice assignments."
+    },
+    "/tasks/{taskId}": {
+      "schema": "Task",
+      "description": "Detailed audit tasks and procedures."
+    },
+    "/work_logs/{workLogId}": {
+      "schema": "WorkLog",
+      "description": "Daily article trainee work logs."
+    },
+    "/attendance/{attendanceId}": {
+      "schema": "AttendanceRecord",
+      "description": "Employee attendance check-ins and client site records."
+    },
+    "/attendance_corrections/{correctionId}": {
+      "schema": "AttendanceCorrection",
+      "description": "Attendance correction requests and supervisor decisions."
+    },
+    "/leave_requests/{leaveId}": {
+      "schema": "LeaveRequest",
+      "description": "Leave applications and multi-level approval history."
+    },
+    "/review_points/{reviewId}": {
+      "schema": "ReviewPoint",
+      "description": "Audit review points and clearance logs."
+    },
+    "/notifications/{notificationId}": {
+      "schema": "AppNotification",
+      "description": "In-app notifications."
+    },
+    "/audit_events/{eventId}": {
+      "schema": "AuditEvent",
+      "description": "Immutable security and action audit logs."
+    }
+  }
+}

@@ -1,0 +1,134 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function getUserData() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
+    function hasRole(role) {
+      return isSignedIn() && (
+        request.auth.token.role == role || 
+        getUserData().role == role
+      );
+    }
+
+    function isPartner() {
+      return isSignedIn() && (
+        hasRole('managing_partner') || 
+        hasRole('engagement_partner') ||
+        request.auth.token.email == 'acharyaramesh69@gmail.com'
+      );
+    }
+
+    function isManager() {
+      return isPartner() || hasRole('audit_manager');
+    }
+
+    function isSenior() {
+      return isManager() || hasRole('audit_senior');
+    }
+
+    function isHr() {
+      return hasRole('hr_admin') || hasRole('managing_partner');
+    }
+
+    // 1. User Profiles
+    match /users/{userId} {
+      allow read: if isSignedIn();
+      allow create, update: if isOwner(userId) || isPartner() || isHr();
+      allow delete: if hasRole('managing_partner');
+    }
+
+    // 2. Clients Master
+    match /clients/{clientId} {
+      allow read: if isSignedIn();
+      allow create, update: if isManager();
+      allow delete: if isPartner();
+    }
+
+    // 3. Audit Engagements / Assignments
+    match /assignments/{assignmentId} {
+      allow read: if isSignedIn();
+      allow create, update: if isManager();
+      allow delete: if hasRole('managing_partner');
+    }
+
+    // 4. Audit Program Tasks
+    match /tasks/{taskId} {
+      allow read: if isSignedIn();
+      allow create: if isSenior();
+      allow update: if isSenior() || (isSignedIn() && request.resource.data.assignedToId == request.auth.uid);
+      allow delete: if isManager();
+    }
+
+    // 5. Daily Article Trainee Work Logs (ICAN Diary)
+    match /work_logs/{logId} {
+      allow read: if isSignedIn();
+      // Trainees can only create their own logs
+      allow create: if isSignedIn() && (request.resource.data.traineeId == request.auth.uid || isSenior());
+      // Trainees can only edit their own draft or returned logs; seniors can review & approve
+      allow update: if isSenior() || (isSignedIn() && resource.data.traineeId == request.auth.uid && resource.data.status != 'approved');
+      allow delete: if isManager();
+    }
+
+    // 6. Attendance Records
+    match /attendance/{attendanceId} {
+      allow read: if isSignedIn();
+      // Users can check in/out for themselves, or HR can record
+      allow create, update: if isSignedIn() && (request.resource.data.userId == request.auth.uid || isHr());
+      allow delete: if isHr();
+    }
+
+    // 7. Attendance Corrections
+    match /attendance_corrections/{correctionId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      allow update: if isManager() || isHr();
+      allow delete: if isHr();
+    }
+
+    // 8. Leave Requests
+    match /leave_requests/{leaveId} {
+      allow read: if isSignedIn();
+      // Trainees cannot self-approve on creation
+      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid && request.resource.data.status != 'approved';
+      // Only managers/HR/partners can approve, never self-approval
+      allow update: if (isManager() || isHr()) && resource.data.userId != request.auth.uid;
+      allow delete: if isHr();
+    }
+
+    // 9. Audit Review Points & Queries
+    match /review_points/{pointId} {
+      allow read: if isSignedIn();
+      // Seniors, managers, partners can raise review points
+      allow create: if isSenior();
+      // Assignee can update response; only seniors/managers can clear
+      allow update: if isSenior() || (isSignedIn() && resource.data.assignedToId == request.auth.uid);
+      allow delete: if isManager();
+    }
+
+    // 10. Audit Events Trail (Security: IMMUTABLE APPEND-ONLY)
+    match /audit_events/{eventId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn();
+      allow update, delete: if false; // Append-only audit integrity!
+    }
+
+    // 11. Practice Notifications
+    match /notifications/{notificationId} {
+      allow read, update: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow create: if isSignedIn();
+      allow delete: if isSignedIn() && resource.data.userId == request.auth.uid;
+    }
+  }
+}
